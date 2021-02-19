@@ -49,9 +49,33 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function registrasi(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:30',
+            'username' => 'required|string|max:20',
+            'password' => 'required|string',
+            'email' => 'required|email|max:30',
+            'status' => 'required|max:20',
+        ]);
+        $data = new User;
+        $data->name = $request->name;
+        $data->username = $request->username;
+        $data->password = Hash::make($request->password);
+        $data->email = $request->email;
+        $data->status = $request->status;
+
+        $data->save();
+
+        return response()->json(
+            [
+                "meta" => [
+                    "message" => "Suksess",
+                    "status" => true
+                ],
+                "data" => $data
+            ]
+        );
     }
 
     /**
@@ -96,7 +120,17 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data = User::find($id);
+        $data->delete();
+        return response()->json(
+            [
+                "meta" => [
+                    "message" => "Succes",
+                    "status" => true
+                ],
+                "data" => $data
+            ]
+        );
     }
     public function createToken()
     {
@@ -123,10 +157,10 @@ class UserController extends Controller
 
         return $user->createToken($request->device_name)->plainTextToken;
     }
-    public function updatePassword(Request $request)
+    public function updatePassword(Request $request, $id)
     {
         $password = $request->password;
-        $user = User::find(2);
+        $user = User::find($id);
         $user->password = bcrypt($password);
         $user->save();
 

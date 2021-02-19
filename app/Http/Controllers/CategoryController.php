@@ -12,9 +12,11 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Category::all();
+        $data = Category::with("user", "posts")
+                        ->search($request->q)                
+                         ->get();
         return response()->json(
             [
                 "meta" => [
@@ -51,7 +53,7 @@ class CategoryController extends Controller
         $data = new Category;
         $data->name = $request->name;
         $data->status = $request->status;
-        $data->status = $request->user()->id;
+        $data->user_id = $request->user()->id;
 
         $data->save();
 
@@ -97,7 +99,26 @@ class CategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:30',
+            'status' => 'required|string|max:25',
+        ]);
+
+        $data = Category::find($id);
+        $data->name = $request->name;
+        $data->status = $request->status;
+
+        $data->save();
+
+        return response()->json(
+            [
+                "meta" => [
+                    "message" => "Succes",
+                    "status" => true
+                ],
+                "data" => $data
+            ]
+        );
     }
 
     /**
@@ -108,6 +129,16 @@ class CategoryController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data = Category::find($id);
+        $data->delete();
+        return response()->json(
+            [
+                "meta" => [
+                    "message" => "Succes",
+                    "status" => true
+                ],
+                "data" => $data
+            ]
+        );
     }
 }

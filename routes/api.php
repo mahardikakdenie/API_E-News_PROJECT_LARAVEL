@@ -18,11 +18,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/login', function (Request $request) {
     return $request->user();
 });
+Route::post('/registrasi', 'userController@registrasi');
 Route::get('/logout', 'UserController@logout');
 Route::post('/login', 'UserController@login');
 Route::middleware('auth:sanctum')->prefix('user')->group(function () {
     Route::post('/token/create', 'UserController@createToken');
-    Route::patch('/password', 'UserController@updatePassword');
+    Route::patch('/password/{id}', 'UserController@updatePassword');
     Route::get('/me', 'UserController@me');
 });
 Route::get('/post/{slug}', 'PostController@showBySlug')->middleware('auth:sanctum');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Tag;
 
 class TagController extends Controller
 {
@@ -13,7 +14,17 @@ class TagController extends Controller
      */
     public function index()
     {
-        //
+        $data = Tag::with("user", "posts")->get();
+
+        return response()->json(
+            [
+                "meta" => [
+                    "message" => "Success",
+                    "status" => true
+                ],
+                "data" => $data
+            ],
+        );
     }
 
     /**
@@ -34,7 +45,22 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = new Tag;
+        $data->name = $request->name;
+        $data->status = $request->status;
+        $data->user_id = $request->user()->id;
+
+        $data->save();
+
+        return response()->json(
+            [
+                "meta" => [
+                    "message" => "Success",
+                    "success" => true
+                ],
+                "data" => $data
+            ]
+        );
     }
 
     /**
@@ -68,7 +94,22 @@ class TagController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = Tag::finc($id);
+        $data->name = $request->input('name', $data->name);
+        $data->status = $request->input('status', $data->status);
+        $data->user_id = $request->user()->id;
+
+        $data->save();
+
+        return response()->json(
+            [
+                "meta" => [
+                    "message" => "Success",
+                    "success" => true
+                ],
+                "data" => $data
+            ]
+        );
     }
 
     /**

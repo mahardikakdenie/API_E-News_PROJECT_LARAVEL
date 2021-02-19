@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Role;
 
 class RoleController extends Controller
 {
@@ -13,7 +14,17 @@ class RoleController extends Controller
      */
     public function index()
     {
-        //
+        $data = Role::with("users")->get();
+
+        return response()->json(
+            [
+                "meta" => [
+                    "message" => "Succses",
+                    "status" => true
+                ],
+                "data" => $data
+            ]
+        );
     }
 
     /**

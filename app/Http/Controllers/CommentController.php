@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Comment;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -11,9 +12,21 @@ class CommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $data = Comment::with("user", "post")
+            ->postId($request->post_id)
+            ->get();
+
+        return response()->json(
+            [
+                "meta" => [
+                    "message" => "Succes",
+                    "status" => true
+                ],
+                "data" => $data
+            ],
+        );
     }
 
     /**
@@ -34,7 +47,23 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = new Comment;
+        $data->comment = $request->comment;
+        $data->status = $request->status;
+        $data->user_id = $request->user()->id;
+        $data->post_id = $request->post_id;
+
+        $data->save();
+
+        return response()->json(
+            [
+                "meta" => [
+                    "message" => "Success",
+                    "status" => true
+                ],
+                "data" => $data
+            ]
+        );
     }
 
     /**
@@ -45,7 +74,17 @@ class CommentController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = Comment::find($id);
+
+        return response()->json(
+            [
+                "meta" => [
+                    "message" => "Success",
+                    "status" => true
+                ],
+                "data" => $data
+            ]
+        );
     }
 
     /**
@@ -79,6 +118,16 @@ class CommentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $data = Comment::find($id);
+        $data->delete();
+        return response()->json(
+            [
+                "meta" => [
+                    "message" => "Succes",
+                    "status" => true
+                ],
+                "data" => $data
+            ]
+        );
     }
 }

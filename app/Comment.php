@@ -10,8 +10,16 @@ class Comment extends Model
     {
         return $this->belongsTo('App\Post');
     }
-    public function users()
+    public function user()
     {
         return $this->belongsTo('App\User');
+    }
+    public function scopePostId($query, $post_id)
+    {
+        if ($post_id != '' || $post_id != null) {
+            return $query->where("post_id", $post_id);
+        } else {
+            return $query;
+        }
     }
 }

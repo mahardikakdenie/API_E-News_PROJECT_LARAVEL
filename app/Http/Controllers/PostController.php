@@ -16,9 +16,9 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        $data = Post::with("user", "category", "tags")
+        $data = Post::with("user", "category", "tags", "comments")
             ->search($request->q)
-            ->owner($request->user()->id)
+            // ->owner($request->user()->id)
             ->get();
 
         // Contoh lawas
