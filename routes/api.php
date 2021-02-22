@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->prefix('user')->group(function () {
     Route::post('/token/create', 'UserController@createToken');
     Route::patch('/password/{id}', 'UserController@updatePassword');
     Route::get('/me', 'UserController@me');
+    Route::get('/logout', 'UserController@logout');
 });
 Route::get('/post/{slug}', 'PostController@showBySlug')->middleware('auth:sanctum');
 Route::resource('user', 'UserController')->middleware('auth:sanctum');

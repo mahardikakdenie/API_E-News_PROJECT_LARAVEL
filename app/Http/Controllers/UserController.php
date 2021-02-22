@@ -11,9 +11,24 @@ use phpDocumentor\Reflection\PseudoTypes\True_;
 class UserController extends Controller
 {
 
+    public function logout(Request $request)
+    {
+        $data = $request->user()->currentAccessToken()->delete();
+        return response()->json(
+            [
+                "meta" => [
+                    "message" => "token sudah di Hapus",
+                    "status" => true
+                ],
+                "token" => $data
+            ],
+        );
+    }
+
     public function me(Request $request)
     {
         $data =  $request->user();
+
         return response()->json(
             [
                 "meta" => [
@@ -155,7 +170,16 @@ class UserController extends Controller
             ]);
         }
 
-        return $user->createToken($request->device_name)->plainTextToken;
+        $data =  $user->createToken($request->device_name)->plainTextToken;
+        return response()->json(
+            [
+                "meta" => [
+                    "message" => "Success",
+                    "status" => "Message",
+                ],
+                "access_token" => $data
+            ]
+        );
     }
     public function updatePassword(Request $request, $id)
     {
