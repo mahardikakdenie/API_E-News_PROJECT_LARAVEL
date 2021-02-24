@@ -16,6 +16,8 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
+        $paginations = Post::paginate(10);
+        $per_page = $paginations->perPage();
         $data = Post::with("user", "category", "tags", "comments")
             ->search($request->q)
             // ->owner($request->user()->id)
@@ -37,7 +39,11 @@ class PostController extends Controller
             [
                 "meta" => [
                     "message" => "Success",
-                    "status" => true
+                    "status" => true,
+                    "pagintion" => [
+                        "current_page" => $paginations,
+                        "Per_page" => $per_page,
+                    ],
                 ],
                 "data" => $data,
             ]
@@ -64,13 +70,14 @@ class PostController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:50',
-            'post' => 'required|string',
+            'post' => 'required',
             'status' => 'required|string|max:25',
         ]);
         $post = new Post;
         $post->title = $request->title;
         $post->post = $request->post;
         $post->status = $request->status;
+        $post->category_id = $request->category_id;
         $post->slug = Str::of($request->title)->slug('-');
         $post->user_id = $request->user()->id;
 
@@ -107,6 +114,44 @@ class PostController extends Controller
             ]
         );
     }
+    public function approve(Request $request, $id)
+    {
+        if ($request->user()->role->name != "administrator") {
+            return response()->json([
+                "meta" => [
+                    "message" => "you're not admin",
+                    "status" => false
+                ],
+                "data" => null
+            ]);
+        }
+        $data = Post::findOrFail($id);
+        $data->admin_id = $request->user()->id;
+        $data->status = "publish";
+
+        $data->save();
+        return response()->json([
+            "meta" => [
+                "message" => "Success",
+                "status" => true
+            ],
+            "data" => $data
+        ]);
+    }
+    public function showById($id)
+    {
+        $data = Post::with("user")->where('id', $id)->first();
+        return response()->json(
+            [
+                'meta' => [
+                    "message" => "Success",
+                    "status" => true,
+                ],
+                "data" => $data,
+
+            ]
+        );
+    }
 
     /**
      * Show the form for editing the specified resource.
@@ -126,7 +171,7 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $slug)
     {
         $request->validate([
             'title' => 'required|string|max:50',
@@ -134,10 +179,11 @@ class PostController extends Controller
             'status' => 'required|string|max:25',
         ]);
 
-        $post = Post::find($id);
-        $post->title = $request->title;
-        $post->post = $request->post;
-        $post->status = $request->status;
+        $post = Post::find($slug);
+        $post->title = $request->input('title', $post->title);
+        $post->post = $request->input('post', $post->post);
+        $post->status = $request->input('status', $post->status);
+        $post->category_id = $request->input("category_id", $post->category_id);
         $post->slug = Str::of($request->title)->slug('-');
         $post->user_id = $request->user()->id;
 

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Post extends Model
 {
     use SoftDeletes;
+    protected $defaultPagination = ['number' => 1];
     public function comments()
     {
         return $this->hasMany('App\Comment');

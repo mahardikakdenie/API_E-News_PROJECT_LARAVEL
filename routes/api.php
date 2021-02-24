@@ -27,7 +27,9 @@ Route::middleware('auth:sanctum')->prefix('user')->group(function () {
     Route::get('/me', 'UserController@me');
     Route::get('/logout', 'UserController@logout');
 });
-Route::get('/post/{slug}', 'PostController@showBySlug')->middleware('auth:sanctum');
+Route::patch('/post/{id}/approve', 'PostController@approve')->middleware('auth:sanctum');
+Route::get('/post/{id}', 'PostController@showById')->middleware('auth:sanctum');
+Route::get('/post/slugname/{slug}', 'PostController@showBySlug')->middleware('auth:sanctum');
 Route::resource('user', 'UserController')->middleware('auth:sanctum');
 Route::resource('category', 'CategoryController')->middleware('auth:sanctum');
 Route::resource('comment', 'CommentController')->middleware('auth:sanctum');
