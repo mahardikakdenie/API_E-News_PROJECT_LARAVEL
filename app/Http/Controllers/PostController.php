@@ -119,7 +119,7 @@ class PostController extends Controller
         if ($request->user()->role->name != "administrator") {
             return response()->json([
                 "meta" => [
-                    "message" => "you're not admin",
+                    "message" => "you are not admin",
                     "status" => false
                 ],
                 "data" => null
