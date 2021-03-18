@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Post;
+use App\Thumbnail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
@@ -16,11 +18,17 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        $paginations = Post::paginate(10);
-        $per_page = $paginations->perPage();
-        $data = Post::with("user", "category", "tags", "comments")
+        // $paginations = Post::paginate(10);
+        // $per_page = $paginations->perPage();
+        $data = Post::with("user", "category", "tags", "comments", "thumbnail")
             ->search($request->q)
+            // ->whereHas("category", function (Builder $query) {
+            //     $query->where("name", $request->category);
+            // })
             // ->owner($request->user()->id)
+            ->categoryRole($request->category)
+            ->desc($request->id)
+            ->limitPost($request->limit)
             ->get();
 
         // Contoh lawas
@@ -40,10 +48,6 @@ class PostController extends Controller
                 "meta" => [
                     "message" => "Success",
                     "status" => true,
-                    "pagintion" => [
-                        "current_page" => $paginations,
-                        "Per_page" => $per_page,
-                    ],
                 ],
                 "data" => $data,
             ]
@@ -80,6 +84,7 @@ class PostController extends Controller
         $post->category_id = $request->category_id;
         $post->slug = Str::of($request->title)->slug('-');
         $post->user_id = $request->user()->id;
+        $post->thumbnail_id = $request->thumbnail_id;
 
         $post->save();
 
@@ -102,7 +107,9 @@ class PostController extends Controller
      */
     public function showBySlug($slug)
     {
-        $data = Post::with("user")->where('slug', $slug)->first();
+        $data = Post::with("user", "thumbnail")->where('slug', $slug)->first();
+
+        $data->increment('views');
         return response()->json(
             [
                 'meta' => [
@@ -140,7 +147,7 @@ class PostController extends Controller
     }
     public function showById($id)
     {
-        $data = Post::with("user")->where('id', $id)->first();
+        $data = Post::with("user", "thumbnail")->where('id', $id)->first();
         return response()->json(
             [
                 'meta' => [
@@ -186,6 +193,7 @@ class PostController extends Controller
         $post->category_id = $request->input("category_id", $post->category_id);
         $post->slug = Str::of($request->title)->slug('-');
         $post->user_id = $request->user()->id;
+        $post->thumbnail_id = $request->input('thumbnail_id', $post->thumbnail_id);
 
         $post->save();
 

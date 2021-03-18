@@ -15,8 +15,8 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $data = Category::with("user", "posts")
-                        ->search($request->q)                
-                         ->get();
+            ->search($request->q)
+            ->get();
         return response()->json(
             [
                 "meta" => [
