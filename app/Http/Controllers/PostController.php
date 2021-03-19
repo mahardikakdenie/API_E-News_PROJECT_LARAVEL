@@ -126,7 +126,7 @@ class PostController extends Controller
     }
     public function approve(Request $request, $id)
     {
-        if ($request->user()->role->name != "administrator") {
+        if ($request->user()->role->name != "admin") {
             return response()->json([
                 "meta" => [
                     "message" => "you are not admin",
