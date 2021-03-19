@@ -20,6 +20,7 @@ class PostController extends Controller
     {
         // $paginations = Post::paginate(10);
         // $per_page = $paginations->perPage();
+
         $data = Post::with("user", "category", "tags", "comments", "thumbnail")
             ->search($request->q)
             // ->whereHas("category", function (Builder $query) {
@@ -27,9 +28,10 @@ class PostController extends Controller
             // })
             // ->owner($request->user()->id)
             ->categoryRole($request->category)
+            ->statusPublish($request->status)
             ->desc($request->id)
             ->limitPost($request->limit)
-            ->get();
+            ->paginate(11);
 
         // Contoh lawas
 
@@ -48,6 +50,7 @@ class PostController extends Controller
                 "meta" => [
                     "message" => "Success",
                     "status" => true,
+                    // "Paginations" => $paginations
                 ],
                 "data" => $data,
             ]

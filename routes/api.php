@@ -27,6 +27,8 @@ Route::middleware('auth:sanctum')->prefix('user')->group(function () {
     Route::get('/me', 'UserController@me');
     Route::get('/logout', 'UserController@logout');
 });
+Route::get('/response/frontend', "ResponseController@index");
+Route::post('/response/frontend', "ResponseController@store");
 Route::get("/category/frontend", "CategoryController@index");
 Route::get('/post/frontend', 'PostController@index');
 Route::get("/post/frontend/{slug}", "PostController@showBySlug");

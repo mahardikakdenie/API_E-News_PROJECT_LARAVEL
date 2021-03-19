@@ -34,6 +34,10 @@ class Post extends Model
     {
         return $this->belongsTo("App\Thumbnail");
     }
+    public function response()
+    {
+        return $this->hasMany("App\Response");
+    }
     public function scopeOwner($query, $user_id)
     {
         if ($user_id !== null) {
@@ -65,26 +69,29 @@ class Post extends Model
     {
         if ($limit == null && $limit == "") {
             return $query;
-        } else if ($limit == "10") {
-            return $query->limit(10);
+        } else if ($limit != "") {
+            return $query->limit($limit);
         }
     }
     public function scopeCategoryRole($query, $category)
     {
         if ($category == "" && $category == null) {
             return $query;
-        } else if ($category == "Komunitas" || $category == "komunitas") {
-            $query->whereHas("category", function ($query) {
-                $query->where("name", "Komunitas");
+        } else if ($category != '') {
+            $query->whereHas("category", function ($query) use ($category) {
+
+                $query->where("name", $category);
             });
-        } else if ($category == "olahraga" || $category == "Olahraga") {
-            $query->whereHas("category", function ($query) {
-                $query->where("name", "Olahraga");
-            });
-        } else if ($category == "umum" || $category = "Umum") {
-            $query->whereHas("category", function ($query) {
-                $query->where("name", "Umum");
-            });
+        }
+    }
+    public function scopeStatusPublish($query, $status = null)
+    {
+        if ($status == '' && $status == null) {
+            return $query;
+        } else if ($status == 'publish') {
+            return $query->where('status', 'publish');
+        } else {
+            return $query;
         }
     }
 }
