@@ -18,4 +18,12 @@ class Response extends Model
             return $query->where("post_id", $sub);
         }
     }
+    public function scopeSearch($query, $q = null)
+    {
+        if ($q != "" && $q != null) {
+            return $query->where('comments', 'like', '%' . $q . '%');
+        } else {
+            return $query;
+        }
+    }
 }
