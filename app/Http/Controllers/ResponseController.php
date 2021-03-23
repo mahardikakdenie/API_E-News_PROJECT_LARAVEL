@@ -14,7 +14,7 @@ class ResponseController extends Controller
      */
     public function index(Request $request)
     {
-        $data = Response::with('post')->sub($request->post_id)->get();
+        $data = Response::with('post')->sub($request->post_id)->search($request->q)->get();
 
         return response()->json(
             [
