@@ -87,6 +87,7 @@ class PostController extends Controller
         $post->category_id = $request->category_id;
         $post->slug = Str::of($request->title)->slug('-');
         $post->user_id = $request->user()->id;
+        $post->url_thumbnail = $request->url_thumbnail;
         $post->thumbnail_id = $request->thumbnail_id;
 
         $post->save();
