@@ -14,7 +14,7 @@ class AlterTablePostAddUrlThumbnail extends Migration
     public function up()
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->string('url_thumbnail', 150);
+            $table->string('url_thumbnail', 150)->nullable();
         });
     }
 
